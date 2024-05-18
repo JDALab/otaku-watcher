@@ -3,7 +3,7 @@
   # otaku-watcher
   <sub>A mov-cli plugin for watching anime.</sub>
 
-  <img src="https://github.com/mov-cli/mov-cli-gogotaku/assets/132799819/1436339c-f2c3-4c37-b9ae-0da6b83faf8d">
+  <img src="https://github.com/JDALab/otaku-watcher/assets/123201787/2df8d707-b472-48b3-aaa1-f6d5154c686d">
 
 </div>
 
