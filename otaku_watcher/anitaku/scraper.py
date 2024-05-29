@@ -39,7 +39,7 @@ class AnitakuScraper(Scraper):
         elif dood:
             url = self.__dood(dood.find("a")["data-video"])
 
-        if metadata.type == MetadataType.MOVIE:
+        if metadata.type == MetadataType.SINGLE:
             return Single(
                 url,
                 title = metadata.title,
@@ -95,9 +95,9 @@ class AnitakuScraper(Scraper):
                 last = li[-1].find("a")["ep_end"]
 
                 if last == "1":
-                    type = MetadataType.MOVIE
+                    type = MetadataType.SINGLE
                 else:
-                    type = MetadataType.SERIES
+                    type = MetadataType.MULTI
 
                 info_body = _soup.find("div", {"class": "anime_info_body_bg"})
 
