@@ -120,10 +120,11 @@ class AnitakuScraper(Scraper):
                     )
                 )
 
-                result_count += 1
+                if limit:
+                    result_count += 1
 
-                if result_count >= limit:
-                    return None
+                    if result_count >= limit:
+                        return None
 
             pagination += 1
 
