@@ -22,7 +22,7 @@ dependencies = [
     "requests",
     "importlib-metadata; python_version<'3.8'",
 
-    "mov-cli>=4.3"
+    "mov-cli>=4.4"
 ]
 
 dynamic = ["version"]
