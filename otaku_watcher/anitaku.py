@@ -11,6 +11,9 @@ if TYPE_CHECKING:
     from bs4 import Tag
 
 import re
+from datetime import datetime
+from devgoldyutils import Colours
+from dataclasses import dataclass
 
 from mov_cli import utils
 from mov_cli.scraper import Scraper
@@ -18,6 +21,14 @@ from mov_cli import Single, Multi, Metadata, MetadataType
 from mov_cli import ExtraMetadata
 
 __all__ = ("AnitakuScraper",)
+
+@dataclass
+class AnimeMetadata(Metadata):
+    is_dub: bool = None
+
+    @property
+    def display_name(self) -> str:
+        return Colours.BLUE.apply(self.title) + (Colours.ORANGE.apply("[DUB]") if self.is_dub else "") + f" ({self.year})"
 
 class AnitakuScraper(Scraper):
     def __init__(self, config: Config, http_client: HTTPClient, options: Optional[ScraperOptionsT] = None) -> None:
@@ -42,7 +53,7 @@ class AnitakuScraper(Scraper):
                 title_a_element = item.find("p", {"class": "name"}).find("a")
 
                 id = title_a_element["href"].split("/")[-1]
-                title = title_a_element.text.replace('"', '')
+                raw_title: str = title_a_element.text
                 image_url = item.find("div", {"class": "img"}).find("img")["src"]
 
                 year_text = re.findall(r"(\d{4})", item.find("p", {"class": "released"}).text)
@@ -70,12 +81,15 @@ class AnitakuScraper(Scraper):
 
                 genres = _p[3].findAll("a")
 
-                yield Metadata(
+                title = raw_title.replace('"', '').replace("(Dub)", "")
+
+                yield AnimeMetadata(
                     id = id,
                     title = title,
                     type = type,
                     year = year,
                     image_url = image_url,
+                    is_dub = True if "(Dub)" in raw_title else False,
 
                     extra_func = lambda: ExtraMetadata(
                         description = [str.strip(x) for x in _p[2].strings if str.strip(x) != ''][1].replace(r"\r\n", "\r\n"),
