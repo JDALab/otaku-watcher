@@ -11,7 +11,6 @@ if TYPE_CHECKING:
     from bs4 import Tag
 
 import re
-from datetime import datetime
 from devgoldyutils import Colours
 from dataclasses import dataclass
 
