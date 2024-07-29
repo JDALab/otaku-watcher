@@ -179,7 +179,7 @@ class AnitakuScraper(Scraper):
         last = int(li[-1].find("a")["ep_end"])
         return {1: last}  # TODO: Return multiple seasons.
 
-    def __dood(self, url: str) -> str | None:
+    def __dood(self, url: str) -> str:
         video_id = url.split("/")[-1]
         webpage_html = self.http_client.get(
             f"https://dood.to/e/{video_id}", redirect = True
@@ -190,7 +190,7 @@ class AnitakuScraper(Scraper):
             pass_md5 = re.search(r"/pass_md5/[^']*", webpage_html).group()
         except Exception as e:
             self.logger.error(e)
-            return None
+            return ""
 
         urlh = f"https://dood.to{pass_md5}"
         res = self.http_client.get(
