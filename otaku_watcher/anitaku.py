@@ -146,9 +146,11 @@ class AnitakuScraper(Scraper):
         streamwish = soup.find("li", {"class": "streamwish"})
         dood = soup.find("li", {"class": "doodstream"})
 
-        if streamwish:
+        url = ""
+
+        if streamwish and not url:
             url = self.__streamwish(streamwish.find("a")["data-video"])
-        elif dood:
+        if dood and not url:
             url = self.__dood(dood.find("a")["data-video"])
 
         if metadata.type == MetadataType.SINGLE:
@@ -177,7 +179,7 @@ class AnitakuScraper(Scraper):
         last = int(li[-1].find("a")["ep_end"])
         return {1: last}  # TODO: Return multiple seasons.
 
-    def __dood(self, url: str) -> str:
+    def __dood(self, url: str) -> str | None:
         video_id = url.split("/")[-1]
         webpage_html = self.http_client.get(
             f"https://dood.to/e/{video_id}", redirect = True
@@ -200,6 +202,9 @@ class AnitakuScraper(Scraper):
 
     def __streamwish(self, url: str) -> str:
         req = self.http_client.get(url).text
-        file = re.findall(r'file:"(.*?)"', req)[0]
+        try:
+            file = re.findall(r'file:"(.*?)"', req)[0]
+        except IndexError:
+            return ""
 
         return file
