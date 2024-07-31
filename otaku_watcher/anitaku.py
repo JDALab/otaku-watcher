@@ -30,10 +30,7 @@ class AnimeMetadata(Metadata):
     def display_name(self) -> str:
         return (
             Colours.BLUE.apply(self.title) + (
-                Colours.ORANGE.apply("[DUB]")
-                if self.is_dub
-                else
-                ""
+                Colours.ORANGE.apply("[DUB]") if self.is_dub else ""
             ) + f" ({self.year})"
         )
 
