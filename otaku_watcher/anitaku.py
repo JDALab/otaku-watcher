@@ -11,7 +11,6 @@ if TYPE_CHECKING:
     from bs4 import Tag
 
 import re
-from datetime import datetime
 from devgoldyutils import Colours
 from dataclasses import dataclass
 
@@ -22,27 +21,44 @@ from mov_cli import ExtraMetadata
 
 __all__ = ("AnitakuScraper",)
 
+
 @dataclass
 class AnimeMetadata(Metadata):
     is_dub: bool = None
 
     @property
     def display_name(self) -> str:
-        return Colours.BLUE.apply(self.title) + (Colours.ORANGE.apply("[DUB]") if self.is_dub else "") + f" ({self.year})"
+        return (
+            Colours.BLUE.apply(self.title) + (
+                Colours.ORANGE.apply("[DUB]") if self.is_dub else ""
+            ) + f" ({self.year})"
+        )
+
 
 class AnitakuScraper(Scraper):
-    def __init__(self, config: Config, http_client: HTTPClient, options: Optional[ScraperOptionsT] = None) -> None:
+    def __init__(
+        self,
+        config: Config,
+        http_client: HTTPClient,
+        options: Optional[ScraperOptionsT] = None
+    ) -> None:
         self.base_url = "https://anitaku.pe"
         super().__init__(config, http_client, options)
 
-    def search(self, query: str, limit: Optional[int] = None) -> Iterable[Metadata]:
+    def search(
+        self,
+        query: str,
+        limit: Optional[int] = None
+    ) -> Iterable[Metadata]:
         pagination = 1
         result_count = 0
 
         limit = 20 if limit is None else limit
 
         while True:
-            req = self.http_client.get(f"{self.base_url}/search.html?keyword={query}&page={pagination}")
+            req = self.http_client.get(
+                f"{self.base_url}/search.html?keyword={query}&page={pagination}"
+            )
             soup = self.soup(req)
             items: List[Tag] = soup.find("ul", {"class": "items"}).findAll("li")
 
@@ -54,11 +70,14 @@ class AnitakuScraper(Scraper):
 
                 id = title_a_element["href"].split("/")[-1]
                 raw_title: str = title_a_element.text
-                image_url = item.find("div", {"class": "img"}).find("img")["src"]
+                image_url = item.find(
+                    "div", {"class": "img"}
+                ).find("img")["src"]
 
-                year_text = re.findall(r"(\d{4})", item.find("p", {"class": "released"}).text)
+                year_text = re.findall(
+                    r"(\d{4})", item.find("p", {"class": "released"}).text)
 
-                if year_text: # Animes without a year are not released
+                if year_text:  # Animes without a year are not released
                     year = year_text[0]
                 else:
                     continue
@@ -92,7 +111,11 @@ class AnitakuScraper(Scraper):
                     is_dub = True if "(Dub)" in raw_title else False,
 
                     extra_func = lambda: ExtraMetadata(
-                        description = [str.strip(x) for x in _p[2].strings if str.strip(x) != ''][1].replace(r"\r\n", "\r\n"),
+                        description = [
+                            str.strip(x)
+                            for x in _p[2].strings
+                            if str.strip(x) != ''
+                        ][1].replace(r"\r\n", "\r\n"),
                         alternate_titles = [],
                         cast = None,
                         genres = [i.text.split(" ")[-1] for i in genres]
@@ -106,16 +129,25 @@ class AnitakuScraper(Scraper):
 
             pagination += 1
 
-    def scrape(self, metadata: Metadata, episode: utils.EpisodeSelector) -> Multi | Single:
-        req = self.http_client.get(self.base_url + f"/{metadata.id}-episode-{episode.episode}", redirect = True)
+    def scrape(
+        self,
+        metadata: Metadata,
+        episode: utils.EpisodeSelector
+    ) -> Multi | Single:
+        req = self.http_client.get(
+            self.base_url + f"/{metadata.id}-episode-{episode.episode}",
+            redirect = True
+        )
         soup = self.soup(req)
 
         streamwish = soup.find("li", {"class": "streamwish"})
         dood = soup.find("li", {"class": "doodstream"})
 
-        if streamwish:
+        url = ""
+
+        if streamwish and not url:
             url = self.__streamwish(streamwish.find("a")["data-video"])
-        elif dood:
+        if dood and not url:
             url = self.__dood(dood.find("a")["data-video"])
 
         if metadata.type == MetadataType.SINGLE:
@@ -142,7 +174,7 @@ class AnitakuScraper(Scraper):
         episode_page = _soup.find("ul", {"id": "episode_page"})
         li = episode_page.findAll("li")
         last = int(li[-1].find("a")["ep_end"])
-        return {1: last} # TODO: Return multiple seasons.
+        return {1: last}  # TODO: Return multiple seasons.
 
     def __dood(self, url: str) -> str:
         video_id = url.split("/")[-1]
@@ -155,10 +187,11 @@ class AnitakuScraper(Scraper):
             pass_md5 = re.search(r"/pass_md5/[^']*", webpage_html).group()
         except Exception as e:
             self.logger.error(e)
-            return None
+            return ""
 
         urlh = f"https://dood.to{pass_md5}"
-        res = self.http_client.get(urlh, headers = {"referer": "https://dood.to"}).text
+        res = self.http_client.get(
+            urlh, headers = {"referer": "https://dood.to"}).text
         md5 = pass_md5.split("/")
         true_url = res + "MovCli3oPi?token=" + md5[-1]
 
@@ -166,6 +199,9 @@ class AnitakuScraper(Scraper):
 
     def __streamwish(self, url: str) -> str:
         req = self.http_client.get(url).text
-        file = re.findall(r'file:"(.*?)"', req)[0]
+        try:
+            file = re.findall(r'file:"(.*?)"', req)[0]
+        except IndexError:
+            return ""
 
         return file
