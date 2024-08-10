@@ -3,6 +3,8 @@
   # otaku-watcher
   <sub>A mov-cli plugin for watching anime.</sub>
 
+  [![Pypi Version](https://img.shields.io/pypi/v/otaku-watcher?style=flat)](https://pypi.org/project/otaku-watcher)
+
   <img src="https://github.com/JDALab/otaku-watcher/assets/123201787/2df8d707-b472-48b3-aaa1-f6d5154c686d">
 
 </div>
