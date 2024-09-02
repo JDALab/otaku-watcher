@@ -15,10 +15,6 @@
 ## Installation
 Here's how to install and add the plugin to mov-cli.
 
-> [!WARNING]
-> Before installing this plugin make sure ``mov-cli-anime`` is not installed to lower the risks of a conflict.
-> ``pip uninstall mov-cli-anime``
-
 1. Install the pip package.
 ```sh
 pip install otaku-watcher
