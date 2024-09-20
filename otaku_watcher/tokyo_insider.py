@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import List, Optional, Tuple, Iterable
+    from typing import List, Optional, Tuple, Iterable, Dict, Literal
 
     from mov_cli import Config
     from mov_cli.http_client import HTTPClient
@@ -50,7 +50,7 @@ class TokyoInsider(Scraper):
                 metadata = Metadata(
                     id = url,
                     title = name,
-                    type = MetadataType.MULTI # TODO: Handle anime films and stuff.
+                    type = MetadataType.MULTI if "(TV)" in name else MetadataType.SINGLE
                 )
 
                 search_results.append(
@@ -63,7 +63,60 @@ class TokyoInsider(Scraper):
         return [x[1] for x in search_results]
 
     def scrape(self, metadata: Metadata, episode: EpisodeSelector) -> Optional[Multi | Single]:
-        return super().scrape(metadata, episode)
+        if metadata.type == MetadataType.SINGLE:
+            page = self.http_client.request(
+                "GET",
+                f"{BASE_URL}{metadata.id}/movie/1"
+            )
+        else:
+            page = self.http_client.request(
+                "GET",
+                f"{BASE_URL}{metadata.id}/episode/{episode.episode}"
+            )
+
+        soup = self.soup(page)
+
+        inner_page = soup.find("div", {"id": "inner_page"}).find_all("div", recursive=False)[1:]
+
+        avaliable_downloads = []
+
+        for div in inner_page:
+            if "finfo" not in str(div):
+                continue
+
+            streaming_url = div.find_all("a")[-1]
+            finfo = div.find("div", {"class": "finfo"})
+
+            downloads = str(finfo.select("b:nth-child(5)")[0]).replace("<b>", "").replace("</b>", "")
+
+            avaliable_downloads.append(
+                (int(downloads), streaming_url["href"])
+            )
+        
+        avaliable_downloads.sort(key=lambda x: x[0])
+        
+        if metadata.type == MetadataType.MULTI:
+            return Multi(
+                avaliable_downloads[0][1],
+                metadata.title,
+                episode
+            )
+    
+        return Single(
+            avaliable_downloads[0][1],
+            metadata.title
+        )
+
+
+    def scrape_episodes(self, metadata: Metadata) -> Dict[int, int] | Dict[None, Literal[1]]:
+        anime_page = self.http_client.request(
+            "GET",
+            BASE_URL + metadata.id
+        )
+
+        soup = self.soup(anime_page)
+
+        return {1: len(soup.find_all("a", {"class": "download-link"}))}
 
     def __get_anime_list(self) -> List[Tuple[str, str]]:
 
@@ -100,3 +153,4 @@ class TokyoInsider(Scraper):
         )
 
         return list_of_anime_entries
+        
