@@ -12,6 +12,12 @@
 > [!CAUTION]
 > We are on the lookout for maintainers and if we don't find any soon this project may become unmaintained! Please consider or nominate a friend. Thank you.
 
+## ⛑️ Support
+| Scraper | Status | Films | TV | Supports <br> Android & iOS | Notes |
+| ------- | ------ | --- | --- | ---------------------- | :------: |
+| `anitaku` | 🟢 Stable | ✅ | ✅  | ❌ | okay quality (720p) |
+| `tokyoinsider` | 🟢 Stable | ✅ | ✅ | ✅ | **New scraper**, good quality (~1080p) |
+
 ## Installation
 Here's how to install and add the plugin to mov-cli.
 
