@@ -16,7 +16,7 @@
 | Scraper | Status | Films | TV | Supports <br> Android & iOS | Notes |
 | ------- | ------ | --- | --- | ---------------------- | :------: |
 | `anitaku` | 🟢 Stable | ✅ | ✅  | ❌ | okay quality (720p) |
-| `tokyoinsider` | 🟢 Stable | ✅ | ✅ | ✅ | **New scraper**, good quality (~1080p) |
+| `tokyo` (tokyoinsider) | 🔵 Experimental | ✅ | ✅ | ✅ | **New scraper**, good quality (1080p) **for older anime** but a lot of the time absolutely trash quality for newer shows and not all streams have english dub. Give it a try for older anime though like anime before 2018. |
 
 ## Installation
 Here's how to install and add the plugin to mov-cli.

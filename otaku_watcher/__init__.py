@@ -12,9 +12,10 @@ plugin: PluginHookData = {
     "package_name": "otaku-watcher",  # Required for the plugin update checker.
     "scrapers": {
         "DEFAULT": AnitakuScraper,
+        "ANDROID.DEFAULT": TokyoInsider,
         "anitaku": AnitakuScraper,
         "tokyo": TokyoInsider
     }
 }
 
-__version__ = "1.2.3"
+__version__ = "1.2.5"
