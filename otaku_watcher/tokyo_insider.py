@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from bs4 import Tag
 
 from thefuzz import fuzz
+from datetime import datetime
 
 from mov_cli import Cache, Scraper
 from mov_cli.utils import EpisodeSelector, what_platform
@@ -77,34 +78,39 @@ class TokyoInsider(Scraper):
 
         soup = self.soup(page)
 
-        inner_page = soup.find("div", {"id": "inner_page"}).find_all("div", recursive=False)[1:]
+        all_download_divs: List[Tag] = soup.find("div", {"id": "inner_page"}).find_all("div", recursive=False)[1:]
 
-        avaliable_downloads = []
+        available_downloads: List[Tuple[datetime, str]] = []
 
-        for div in inner_page:
-            if "finfo" not in str(div):
+        for download_div in all_download_divs:
+            if "finfo" not in str(download_div):
                 continue
 
-            streaming_url = div.find_all("a")[-1]
-            finfo = div.find("div", {"class": "finfo"})
+            streaming_url_a_tag = download_div.find_all("a")[-1]
+            finfo = download_div.find("div", {"class": "finfo"})
 
-            downloads = str(finfo.select("b:nth-child(5)")[0]).replace("<b>", "").replace("</b>", "")
+            finfo_bold_tags: List[Tag] = finfo.find_all("b")
 
-            avaliable_downloads.append(
-                (int(downloads), streaming_url["href"])
+            date_added_string = finfo_bold_tags[-1].text
+
+            available_downloads.append(
+                (
+                    datetime.strptime(date_added_string, "%m/%d/%y"), # american date format, ewww what's that brother... ewwww
+                    streaming_url_a_tag["href"]
+                )
             )
-        
-        avaliable_downloads.sort(key=lambda x: x[0])
-        
+
+        available_downloads.sort(key = lambda x: x[0].timestamp(), reverse = True)
+
         if metadata.type == MetadataType.MULTI:
             return Multi(
-                avaliable_downloads[0][1],
+                available_downloads[0][1],
                 metadata.title,
                 episode
             )
-    
+
         return Single(
-            avaliable_downloads[0][1],
+            available_downloads[0][1],
             metadata.title
         )
 
