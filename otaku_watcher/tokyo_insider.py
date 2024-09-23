@@ -32,7 +32,7 @@ class TokyoInsider(Scraper):
         self.__anime_list: Optional[List[Tuple[str, str]]] = None
 
     def search(self, query: str, limit: Optional[int] = None) -> Iterable[Metadata]:
-        limit = limit or 35
+        limit = limit or 125 # recommended limit
         anime_list = self.__get_anime_list()
 
         search_results: List[Tuple[int, Metadata]] = []
@@ -44,9 +44,9 @@ class TokyoInsider(Scraper):
             if index == limit:
                 break
 
-            name_match = fuzz.partial_ratio(name.lower(), query.lower())
+            name_match = fuzz.partial_token_sort_ratio(name.lower(), query.lower())
 
-            if name_match > 70:
+            if name_match > 90:
                 metadata = Metadata(
                     id = url,
                     title = name,
@@ -68,6 +68,7 @@ class TokyoInsider(Scraper):
                 "GET",
                 f"{BASE_URL}{metadata.id}/movie/1"
             )
+
         else:
             page = self.http_client.request(
                 "GET",
@@ -106,7 +107,6 @@ class TokyoInsider(Scraper):
             avaliable_downloads[0][1],
             metadata.title
         )
-
 
     def scrape_episodes(self, metadata: Metadata) -> Dict[int, int] | Dict[None, Literal[1]]:
         anime_page = self.http_client.request(

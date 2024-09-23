@@ -13,7 +13,7 @@ plugin: PluginHookData = {
     "scrapers": {
         "DEFAULT": AnitakuScraper,
         "anitaku": AnitakuScraper,
-        "tokyoinsider": TokyoInsider
+        "tokyo": TokyoInsider
     }
 }
 
