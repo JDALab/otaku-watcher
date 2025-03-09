@@ -42,7 +42,7 @@ class AnitakuScraper(Scraper):
         http_client: HTTPClient,
         options: Optional[ScraperOptionsT] = None
     ) -> None:
-        self.base_url = "https://anitaku.pe"
+        self.base_url = "https://anitaku.bz"
         super().__init__(config, http_client, options)
 
     def search(
