@@ -5,7 +5,10 @@
 
   <sub>A mov-cli plugin for watching anime and more!</sub>
 
-  [![Pypi Version](https://img.shields.io/pypi/v/otaku-watcher-contrib?style=flat)](https://pypi.org/project/otaku-watcher-contrib)
+  [![](https://img.shields.io/pypi/v/otaku-watcher-contrib)](https://pypi.org/project/otaku-watcher-contrib)
+  ![](https://img.shields.io/pypi/dm/otaku-watcher-contrib)
+  [![](https://img.shields.io/github/created-at/GDjkhp/otaku-watcher-contrib)](https://github.com/GDjkhp/otaku-watcher-contrib)
+  ![](https://img.shields.io/github/license/GDjkhp/otaku-watcher-contrib)
 
   <img src="https://gdjkhp.github.io/img/gintama.png">
 </div>
@@ -13,8 +16,6 @@
 ## ⛑️ Support
 | Scraper | Status | Films | TV | Mobile support |
 | ------- | ------ | --- | --- | ---------------------- |
-| [`tokyo`](https://www.tokyoinsider.com) | 🔵 Experimental | ✅ | ✅ | ✅ |
-| [`hianime`](https://hianime.to) | 🔵 Experimental | ✅ | ✅  | ❓ |
 | [`animepahe`](https://animepahe.ru) | 🔵 Experimental | ✅ | ✅  | ❓ |
 | [`kisskh`](https://kisskh.id) | 🔵 Experimental | ✅ | ✅  | ❓ |
 
@@ -35,5 +36,5 @@ anime = "otaku-watcher-contrib"
 ```
 ## Usage
 ```sh
-mov-cli lycoris recoil
+mov-cli gintama
 ```
