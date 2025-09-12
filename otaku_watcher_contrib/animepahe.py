@@ -19,7 +19,7 @@ __all__ = ("AnimePaheScraper",)
 
 class AnimePaheScraper(Scraper):
     def __init__(self, config: Config, http_client: HTTPClient, options: Optional[ScraperOptionsT] = None) -> None:
-        self.base_url = "https://animepahe.ru"
+        self.base_url = "https://animepahe.si"
         self.api_url = f"{self.base_url}/api"
         self.search_url = f"{self.api_url}?m=search&q="
         self.release_url = f"{self.api_url}?m=release&id="

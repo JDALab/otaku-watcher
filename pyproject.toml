@@ -7,8 +7,6 @@ requires-python = ">=3.8"
 license = { file = "LICENSE" }
 keywords = [
     "mov-cli",
-    "aniwatch",
-    "hianime",
     "animepahe",
     "kisskh",
     "anime",
